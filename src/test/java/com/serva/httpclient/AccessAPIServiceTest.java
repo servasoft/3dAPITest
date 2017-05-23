@@ -3,6 +3,7 @@ package com.serva.httpclient;
 import com.alibaba.fastjson.JSONObject;
 import com.serva.model.Asset;
 import com.serva.model.LoginResult;
+import com.serva.model.TempAsset;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -70,8 +71,21 @@ public class AccessAPIServiceTest {
     }
 
     @Test
-    public void test7PullAPIData() throws Exception {
-        JSONObject jo = service.pullAPIData();
+    public void test7PushAPIData() throws Exception {
+        JSONObject jo = service.pushAPIData();
         Assert.assertNull(jo.get("error"));
+    }
+
+    @Test
+    public void test8AddTempAsset() throws Exception{
+        TempAsset asset = service.addTempAsset();
+        Assert.assertNotNull(asset);
+        Assert.assertEquals("equipment2", asset.getId());
+    }
+    @Test
+    public void test9DeleteTempAsset() throws Exception {
+        TempAsset asset = service.deleteTempAsset();
+        Assert.assertNotNull(asset);
+        Assert.assertEquals("equipment2", asset.getId());
     }
 }

@@ -1,11 +1,13 @@
 package com.serva.httpclient;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.serva.constant.Constant;
 import com.serva.model.Alarm;
 import com.serva.model.Asset;
 import com.serva.model.LoginResult;
+import com.serva.model.TempAsset;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -314,7 +316,7 @@ public class AccessApiService {
         return null;
     }
 
-    public JSONObject pullAPIData() {
+    public JSONObject pushAPIData() {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
             HttpPost httpPost = new HttpPost(Constant.URL+"data");
@@ -349,6 +351,85 @@ public class AccessApiService {
 
             return JSON.parseObject(responseText);
 
+
+        } catch (UnsupportedCharsetException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public TempAsset addTempAsset(){
+        CloseableHttpClient client = HttpClients.createDefault();
+        try {
+            HttpPost httpPost = new HttpPost(Constant.URL+"tempAsset");
+
+            List<TempAsset> assets = new ArrayList<TempAsset>();
+            TempAsset asset = new TempAsset();
+            asset.setId("equipment2");
+            asset.setName("equipment2");
+            asset.setDescription("test equipment2");
+            assets.add(asset);
+            JSONObject data = new JSONObject();
+            data.put("data", assets);
+            httpPost.setEntity(new StringEntity(JSON.toJSONString(data), ContentType.create("application/json", "UTF-8")));
+            httpPost.setHeader("x-access-token",this.loginResult.getAccess_token());
+
+            System.out.println("executing request " + httpPost.getRequestLine());
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity resEntity = response.getEntity();
+
+            System.out.println("----------------------------------------");
+            System.out.println(response.getStatusLine());
+            System.out.println(response.getStatusLine().getStatusCode());
+            if (resEntity != null) {
+                System.out.println("Response content length: " + resEntity.getContentLength());
+            }
+            String responseText = EntityUtils.toString(resEntity, "UTF-8");
+            System.out.println("result=" + responseText);
+
+            JSONObject result = JSON.parseObject(responseText);
+            JSONArray resValue = result.getJSONArray("value");
+            TempAsset resAsset = resValue.getObject(0, TempAsset.class);
+
+            return resAsset;
+
+        } catch (UnsupportedCharsetException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public TempAsset deleteTempAsset(){
+        CloseableHttpClient client = HttpClients.createDefault();
+        try {
+            HttpDelete httpDelete = new HttpDelete(Constant.URL+"tempAsset/equipment2");
+            httpDelete.setHeader("x-access-token",this.loginResult.getAccess_token());
+
+            System.out.println("executing request " + httpDelete.getRequestLine());
+            CloseableHttpResponse response = client.execute(httpDelete);
+            HttpEntity resEntity = response.getEntity();
+
+            System.out.println("----------------------------------------");
+            System.out.println(response.getStatusLine());
+            System.out.println(response.getStatusLine().getStatusCode());
+            if (resEntity != null) {
+                System.out.println("Response content length: " + resEntity.getContentLength());
+            }
+            String responseText = EntityUtils.toString(resEntity, "UTF-8");
+            System.out.println("result=" + responseText);
+
+            JSONObject result = JSON.parseObject(responseText);
+            TempAsset resAsset = result.getObject("value", TempAsset.class);
+
+            return resAsset;
 
         } catch (UnsupportedCharsetException e) {
             e.printStackTrace();
