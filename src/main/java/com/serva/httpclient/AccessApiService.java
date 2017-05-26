@@ -35,11 +35,7 @@ import java.util.List;
  */
 public class AccessApiService {
 
-    private LoginResult loginResult;
-
-    public void setLoginResult(LoginResult loginResult){
-        this.loginResult = loginResult;
-    }
+    private static LoginResult loginResult;
 
     public AccessApiService(){
 
@@ -55,23 +51,23 @@ public class AccessApiService {
             UrlEncodedFormEntity reqEntity = new UrlEncodedFormEntity(nvps, "UTF-8");
             httpPost.setEntity(reqEntity);
 
-//            System.out.println("executing request " + httpPost.getRequestLine());
+            System.out.println("executing request " + httpPost.getRequestLine());
             CloseableHttpResponse response = client.execute(httpPost);
             HttpEntity resEntity = response.getEntity();
 
-//            System.out.println("----------------------------------------");
-//            System.out.println(response.getStatusLine());
-//            System.out.println(response.getStatusLine().getStatusCode());
+            System.out.println("----------------------------------------");
+            System.out.println(response.getStatusLine());
+            System.out.println(response.getStatusLine().getStatusCode());
             if (resEntity != null) {
-//                System.out.println("Response content length: " + resEntity.getContentLength());
+                System.out.println("Response content length: " + resEntity.getContentLength());
             }
             String responseText = EntityUtils.toString(resEntity, "UTF-8");
-//            System.out.println("result=" + responseText);
+            System.out.println("result=" + responseText);
 
             LoginResult loginResult = (LoginResult)JSON.parseObject(responseText, LoginResult.class);
 
             EntityUtils.consume(resEntity);
-
+            this.loginResult = loginResult;
             return loginResult;
 
         } catch (UnsupportedEncodingException e) {
@@ -201,9 +197,6 @@ public class AccessApiService {
         return null;
     }
 
-    /* 由于对资产的增删没有同步缓存，所以添加的告警资产编号用上面addAsset添加的编号，
-     *  出现告警不能添加成功，会报告警资产编号不存在
-     */
     public JSONObject addAlarm() {
         CloseableHttpClient client = HttpClients.createDefault();
         try {

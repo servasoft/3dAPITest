@@ -17,12 +17,10 @@ import org.junit.runners.MethodSorters;
 public class AccessAPIServiceTest {
 
     private AccessApiService service = new AccessApiService();
-    private LoginResult loginResult;
 
     @Before
     public void before(){
-        LoginResult result = service.auth();
-        service.setLoginResult(result);
+
     }
     @Test
     public void test1Auth() throws Exception {
