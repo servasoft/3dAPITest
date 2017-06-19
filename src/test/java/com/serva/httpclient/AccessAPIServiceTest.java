@@ -86,4 +86,9 @@ public class AccessAPIServiceTest {
         Assert.assertNotNull(asset);
         Assert.assertEquals("equipment2", asset.getId());
     }
+    @Test
+    public void testSynchronousAsset() throws Exception {
+        Asset asset = service.synchronousAsset();
+        Assert.assertNotNull(asset);
+    }
 }

@@ -433,4 +433,77 @@ public class AccessApiService {
         }
         return null;
     }
+
+    /**
+     *同步资产
+     * @return
+     */
+    public Asset synchronousAsset(){
+        CloseableHttpClient client = HttpClients.createDefault();
+        try {
+            HttpPost httpPost = new HttpPost(Constant.URL+"asset/identical");
+            Asset asset = new Asset();
+            //asset.setId("A01");
+            asset.setName("equipment1");
+
+            Asset asset1 = new Asset();
+            //asset1.setId("A02");
+            asset1.setName("equipment3");
+            JSONObject json=new JSONObject();
+            Asset asset3 = new Asset();
+            asset3.setId("b07");
+            asset3.setName("equipment3");
+
+            List<Asset> assets=new ArrayList<Asset>();
+
+            assets.add(asset);
+            assets.add(asset1);
+            assets.add(asset3);
+            json.put("data",assets.toArray());
+            httpPost.setEntity(new StringEntity(JSON.toJSONString(json), ContentType.create("application/json", "UTF-8")));
+
+            //httpPost.setHeader("x-access-token",this.loginResult.getAccess_token());
+
+            System.out.println("executing request " + httpPost.getRequestLine());
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity resEntity = response.getEntity();
+
+            System.out.println("----------------------------------------");
+            System.out.println(response.getStatusLine());
+            System.out.println(response.getStatusLine().getStatusCode());
+            if (resEntity != null) {
+                System.out.println("Response content length: " + resEntity.getContentLength());
+                System.out.println(resEntity.toString());
+            }
+            String responseText = EntityUtils.toString(resEntity, "UTF-8");
+            JSONObject  result=null;
+            if(responseText.indexOf("item")>-1){
+                result = JSON.parseObject(responseText);
+                Asset resAsset = result.getObject("item", Asset.class);
+                System.out.println("result=" + responseText);
+                return resAsset;
+            }else{
+                result = JSON.parseObject(responseText);
+                Asset resAsset = result.getObject("value", Asset.class);
+                System.out.println("result=" + responseText);
+                return resAsset;
+            }
+
+
+
+
+
+
+
+
+
+        } catch (UnsupportedCharsetException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
